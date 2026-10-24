@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hip ceiling coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0EA; --surface:#FFFFFF; --sunk:#E3E8E0; --ink:#15233A; --muted:#566173; --line:#D3DACF;
+  --pitch:#1F5A41; --pitch-ink:#FFFFFF;
+  --green:#2B8A55; --amber:#B97F00; --red:#C33F37;
+  --green-bg:#E2F2E8; --amber-bg:#FBF0D6; --red-bg:#F9E1DF;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1524; --surface:#152037; --sunk:#1B2842; --ink:#E7ECF2; --muted:#9BA7B8; --line:#26344F;
+    --pitch:#4FAE82; --pitch-ink:#07130D;
+    --green:#4BC583; --amber:#EDB33A; --red:#F0675E;
+    --green-bg:#173528; --amber-bg:#3A2E10; --red-bg:#3E1C1C;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1524; --surface:#152037; --sunk:#1B2842; --ink:#E7ECF2; --muted:#9BA7B8; --line:#26344F;
+  --pitch:#4FAE82; --pitch-ink:#07130D;
+  --green:#4BC583; --amber:#EDB33A; --red:#F0675E;
+  --green-bg:#173528; --amber-bg:#3A2E10; --red-bg:#3E1C1C;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 Barlow,"Helvetica Neue",Arial,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:560px;margin:0 auto;padding:12px 16px calc(88px + env(safe-area-inset-bottom,0px))}
+.cond{font-family:"Barlow Condensed","Arial Narrow",Arial,sans-serif}
+.top{padding:8px 0 4px}
+.date{margin:0;font:700 34px/1.05 "Barlow Condensed","Arial Narrow",Arial,sans-serif}
+.meta{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.chip{background:var(--pitch);color:var(--pitch-ink);border-radius:999px;padding:4px 12px;font-weight:600;font-size:14px}
+.since{color:var(--muted);font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin:14px 0}
+.h{margin:0 0 4px;font:700 23px/1.15 "Barlow Condensed","Arial Narrow",Arial,sans-serif}
+.muted{color:var(--muted)} .small{font-size:14px}
+p{margin:6px 0}
+.q{margin:18px 0 0}
+.ql{margin:0 0 8px;font-weight:500}
+.seg{display:flex;gap:6px}
+.seg button,.scale button{flex:1 1 0;min-height:46px;border:1px solid var(--line);background:var(--sunk);color:var(--ink);border-radius:10px;font:500 15px Barlow,Arial,sans-serif;padding:6px;cursor:pointer}
+.seg button.on,.scale button.on{background:var(--pitch);border-color:var(--pitch);color:var(--pitch-ink)}
+.seg.sm button{min-height:38px;font-size:14px}
+.scale{display:grid;grid-template-columns:repeat(11,1fr);gap:4px}
+.scale button{padding:0;font-weight:600}
+.scale-ends{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:4px}
+.btn{display:block;width:100%;min-height:50px;margin-top:18px;border:0;border-radius:12px;background:var(--pitch);color:var(--pitch-ink);font:600 17px Barlow,Arial,sans-serif;cursor:pointer;padding:8px 12px}
+.btn.ghost{background:transparent;color:var(--pitch);border:1.5px solid var(--pitch);margin-top:10px}
+.btn.danger{background:transparent;color:var(--red);border:1.5px solid var(--red)}
+.link{background:none;border:0;color:var(--pitch);font:600 15px Barlow,Arial,sans-serif;padding:8px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.center{display:block;margin:8px auto 0}
+.light{border-radius:16px;padding:14px 16px;margin:14px 0;border-left:8px solid var(--line);color:var(--ink)}
+.light.green{background:var(--green-bg);border-color:var(--green)}
+.light.amber{background:var(--amber-bg);border-color:var(--amber)}
+.light.red{background:var(--red-bg);border-color:var(--red)}
+.light-row{display:flex;align-items:center;gap:10px}
+.light h2{margin:0;flex:1;font:700 28px/1 "Barlow Condensed","Arial Narrow",Arial,sans-serif}
+.dot{width:14px;height:14px;border-radius:50%;background:var(--line);flex:none}
+.dot.green,.green .dot{background:var(--green)}
+.dot.amber,.amber .dot{background:var(--amber)}
+.dot.red,.red .dot{background:var(--red)}
+.banner{border-radius:16px;padding:14px 16px;margin:14px 0;background:var(--surface);border:2px solid var(--pitch)}
+.banner.stop{background:var(--red-bg);border-color:var(--red)}
+.banner .h{margin-bottom:2px}
+.plan{margin:26px 0 8px}
+.plan-title{margin:0 0 4px;font:700 42px/1 "Barlow Condensed","Arial Narrow",Arial,sans-serif}
+.sec{margin-top:22px;border-top:2px solid var(--ink);padding-top:10px}
+.sec h3{margin:0;font:700 21px/1.2 "Barlow Condensed","Arial Narrow",Arial,sans-serif}
+.items{list-style:none;margin:6px 0 0;padding:0}
+.item{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:12px 0;color:var(--ink);font:inherit;cursor:pointer}
+.box{flex:none;width:24px;height:24px;border:2px solid var(--muted);border-radius:7px;margin-top:1px;display:grid;place-items:center}
+.item.on .box{background:var(--pitch);border-color:var(--pitch)}
+.item.on .box::after{content:"";width:6px;height:11px;border:solid var(--pitch-ink);border-width:0 2.5px 2.5px 0;transform:translate(0,-1px) rotate(45deg)}
+.item.on .txt{opacity:.55}
+.txt b,.lk b{display:block;font-weight:600}
+.txt span,.lk span{display:block;color:var(--muted);font-size:15px}
+.locked{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);opacity:.55}
+.locked .box{border-style:dashed}
+select,textarea,input[type=date]{width:100%;min-height:46px;border:1px solid var(--line);border-radius:10px;background:var(--sunk);color:var(--ink);font:16px Barlow,Arial,sans-serif;padding:8px 10px}
+textarea{resize:vertical}
+.field{display:block;margin:14px 0 0}
+.field>span{display:block;font-weight:500;margin-bottom:6px}
+.strip{list-style:none;padding:0;margin:10px 0 4px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.strip li{padding:10px 4px 6px;border-top:6px solid var(--line);font-size:13px;color:var(--muted);line-height:1.25}
+.strip li.done{border-color:var(--pitch)}
+.strip li.cur{border-color:var(--pitch);color:var(--ink);font-weight:600}
+.strip b{display:block;font:700 22px/1 "Barlow Condensed","Arial Narrow",Arial,sans-serif;margin-bottom:2px}
+.gate{list-style:none;padding:0;margin:8px 0 0}
+.gate li{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.mark{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--muted);display:grid;place-items:center;font-size:13px;font-weight:700;margin-top:1px}
+.gate li.ok .mark{background:var(--green);border-color:var(--green);color:#fff}
+.hist{list-style:none;padding:0;margin:0}
+.hist li{padding:14px 0;border-bottom:1px solid var(--line)}
+.hist li:last-child{border-bottom:0}
+.hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.dd{font-weight:600;flex:1}
+.badge{display:inline-block;font-size:13px;padding:3px 10px;border-radius:999px;background:var(--sunk);margin-top:8px}
+.badge.green{background:var(--green-bg)} .badge.amber{background:var(--amber-bg)} .badge.red,.badge.twinge{background:var(--red-bg)}
+.tw{margin-top:8px}
+.tw p{margin:0 0 6px;font-size:14px}
+.plog{list-style:none;padding:0;margin:6px 0 0}
+.plog li{padding:6px 0;font-size:15px}
+.ref{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin:10px 0;overflow:hidden}
+.ref summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;font:700 21px/1.2 "Barlow Condensed","Arial Narrow",Arial,sans-serif;min-height:52px}
+.ref summary::-webkit-details-marker{display:none}
+.ref summary span:first-child{flex:1}
+.ref summary::after{content:"+";font:600 22px/1 Barlow,Arial,sans-serif;color:var(--muted)}
+.ref[open] summary::after{content:"–"}
+.here{font:600 13px Barlow,Arial,sans-serif;background:var(--pitch);color:var(--pitch-ink);border-radius:999px;padding:3px 10px}
+.ref-body{padding:0 16px 14px}
+.ref-body h4{margin:16px 0 0;font:700 18px "Barlow Condensed","Arial Narrow",Arial,sans-serif}
+.ref-list{list-style:none;padding:0;margin:6px 0}
+.ref-list li{padding:9px 0;border-bottom:1px solid var(--line)}
+.ref-list b{display:block;font-weight:600}
+.ref-list span{display:block;color:var(--muted);font-size:15px}
+.ref-ol{margin:4px 0;padding-left:20px}
+.ref-ol li{margin:6px 0}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px);z-index:20}
+nav.tabs button{flex:1;max-width:280px;min-height:58px;background:none;border:0;color:var(--muted);font:600 16px Barlow,Arial,sans-serif;cursor:pointer}
+nav.tabs button.on{color:var(--pitch);box-shadow:inset 0 3px 0 var(--pitch)}
+button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--pitch);outline-offset:2px}
+@media (prefers-reduced-motion: no-preference){ .light{animation:in .25s ease-out} @keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}} }
+</style>
+</head>
+<body>
+<main class="wrap" id="app" aria-live="polite"></main>
+<nav class="tabs" aria-label="Sections">
+  <button type="button" data-act="tab" data-v="today" id="t-today">Today</button>
+  <button type="button" data-act="tab" data-v="progress" id="t-progress">Progress</button>
+  <button type="button" data-act="tab" data-v="plan" id="t-plan">Plan</button>
+</nav>
+<script>
+(function(){
+'use strict';
+var $ = function(s){ return document.querySelector(s); };
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function keyOf(d){ return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+function parse(k){ var p = k.split('-').map(Number); return new Date(p[0], p[1]-1, p[2]); }
+function addDays(k, n){ var d = parse(k); d.setDate(d.getDate()+n); return keyOf(d); }
+function diff(a, b){ var x = a.split('-').map(Number), y = b.split('-').map(Number); return Math.round((Date.UTC(x[0],x[1]-1,x[2]) - Date.UTC(y[0],y[1]-1,y[2])) / 864e5); }
+function nice(k, o){ return parse(k).toLocaleDateString(undefined, o || {weekday:'long', month:'long', day:'numeric'}); }
+var TODAY = keyOf(new Date());
+
+var PH = {1:'Foundations', 2:'Build intensity', 3:'Max effort', 4:'Game-like'};
+var ACT = {
+  soccer:'Soccer', A_str:'Session A + heavy strength', B_run:'Session B + easy run', A_run:'Session A + easy run',
+  A:'Session A only', B:'Session B only', str:'Heavy strength only', light:'Light / isometric session',
+  run:'Easy run', rest:'Rest', recovery:'Recovery day', other:'Something else', unknown:'Don’t remember'
+};
+var ACT_ORDER = ['soccer','A_str','B_run','A_run','A','B','str','light','run','rest','recovery','other','unknown'];
+var TITLE = {
+  soccer:'Soccer day', soccer_or_rest:'Soccer day, or rest', A_str:'Session A, then heavy strength',
+  A_run:'Session A, then an easy run', B_run:'Session B, then an easy run', str:'Heavy strength only',
+  light:'Light / isometric session', run:'Easy run', rest:'Rest day', recovery:'Recovery day'
+};
+function hasA(a){ return a === 'A_str' || a === 'A_run' || a === 'A'; }
+function hasB(a){ return a === 'B_run' || a === 'B'; }
+
+function EMPTY(){ return {v:1, startDate:null, phase:1, phaseStart:null, phaseDir:0, physioOK:false, phaseLog:[], days:{}, updatedAt:0}; }
+var state = EMPTY();
+var tab = 'today', draft = null, redo = false, resetArm = false, saveMode = 'device';
+
+/* ---------- storage ---------- */
+var LS = 'hip-ceiling-coach-v1';
+try { var raw = localStorage.getItem(LS); if (raw) state = Object.assign(EMPTY(), JSON.parse(raw)); } catch (e) {}
+var dbRef = null, writing = false, again = false, timer = null;
+function saveLocal(){ try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) {} }
+function save(){
+  state.updatedAt = Date.now();
+  saveLocal();
+  if (dbRef){ clearTimeout(timer); timer = setTimeout(flush, 500); }
+}
+function flush(){
+  if (!dbRef) return;
+  if (writing){ again = true; return; }
+  writing = true;
+  dbRef.set(JSON.parse(JSON.stringify(state))).catch(function(e){
+    if (e && e.code === 'unavailable') setTimeout(flush, 1500 + Math.random()*1000);
+  }).then(function(){ writing = false; if (again){ again = false; flush(); } });
+}
+function adopt(remote){ state = Object.assign(EMPTY(), JSON.parse(JSON.stringify(remote))); saveLocal(); }
+(function connect(){
+  if (!window.claude || typeof window.claude.use !== 'function') return;
+  Promise.all([window.claude.use('db'), window.claude.use('user')]).then(function(r){
+    var db = r[0], user = r[1];
+    if (!db || !user) return;
+    return user.id().then(function(uid){
+      if (!uid) return;
+      var ref = db.doc('data/users/' + uid + '/coach');
+      return ref.get().then(function(snap){
+        dbRef = ref; saveMode = 'account';
+        if (snap.exists){
+          var rem = snap.data();
+          if ((rem.updatedAt || 0) >= (state.updatedAt || 0)) adopt(rem); else flush();
+        } else if (state.startDate){ flush(); }
+        render();
+        ref.onSnapshot(function(s){
+          if (!s.exists || s.metadata.hasPendingWrites) return;
+          var d = s.data();
+          if ((d.updatedAt || 0) > (state.updatedAt || 0)){ adopt(d); render(); }
+        }, function(){});
+      });
+    });
+  }).catch(function(){});
+})();
+
+/* ---------- logic ---------- */
+function day(k){ return state.days[k] || (state.days[k] = {}); }
+function sessionResult(k){
+  var d = state.days[k]; if (!d) return null;
+  if (d.twinge) return 'twinge';
+  var n = state.days[addDays(k,1)];
+  return (n && n.morning && n.morning.light) || 'pending';
+}
+function counts(){
+  var p = state.phase, s = state.phaseStart || '0000-00-00', a = 0, b = 0, stk = 0;
+  Object.keys(state.days).forEach(function(k){
+    var d = state.days[k];
+    if (k < s || d.phase !== p) return;
+    if (sessionResult(k) !== 'green') return;
+    if (hasA(d.activity)) a++;
+    if (hasB(d.activity)){ b++; if (d.stacked) stk++; }
+  });
+  return {a:a, b:b, stk:stk};
+}
+function gate(){
+  var c = counts(), p = state.phase;
+  var items = [
+    {t:'Session A, green', have:Math.min(c.a,2), need:2, ok:c.a >= 2},
+    {t:'Session B, green', have:Math.min(c.b,2), need:2, ok:c.b >= 2}
+  ];
+  if (p === 2) items.push({t:'Physio has okayed full-speed sprints and full-power shots', ok:!!state.physioOK});
+  if (p === 3) items.push({t:'Sprint into a shot at 100%, green', have:Math.min(c.stk,2), need:2, ok:c.stk >= 2});
+  return {items:items, ready:items.every(function(i){ return i.ok; }), c:c};
+}
+function justMovedUp(){
+  if (state.phaseDir !== 1 || !state.phaseStart || diff(TODAY, state.phaseStart) > 10) return false;
+  var c = counts(); return c.a + c.b === 0;
+}
+function lastSoccer(){
+  var best = null;
+  Object.keys(state.days).forEach(function(k){ if (state.days[k].activity === 'soccer' && k <= TODAY && (!best || k > best)) best = k; });
+  return best;
+}
+function soccerWasRed(ls){ var n = ls && state.days[addDays(ls,1)]; return !!(n && n.morning && n.morning.light === 'red'); }
+function planType(){
+  var d = state.days[TODAY] || {}, m = d.morning;
+  if (m && m.light === 'red') return 'recovery';
+  if (d.planOverride) return d.planOverride;
+  var ls = lastSoccer(); if (!ls) return 'soccer_or_rest';
+  var cyc = diff(TODAY, ls), red = soccerWasRed(ls);
+  var map = {0:'soccer', 1:'rest', 2:red ? 'str' : 'A_str', 3:'rest', 4:red ? 'A_run' : 'B_run', 5:'light', 6:'rest'};
+  return map[cyc] || 'soccer_or_rest';
+}
+function lightOf(m, prev){
+  if (m.squeeze >= 3 || m.daily) return 'red';
+  if (prev != null && m.squeeze >= 2 && m.squeeze > prev) return 'red';
+  if (m.squeeze === 2 || m.bridge === 'worse' || m.knee === 'worse' || m.weaker) return 'amber';
+  return 'green';
+}
+
+/* ---------- session content ---------- */
+var WARM = [
+  ['Jog, 3 min','Easy jog, side shuffles, backpedal'],
+  ['Groin and hip, 3 min','Copenhagen hold, knee supported: 2 × 15 s per side. Pillow squeeze: 2 × 5 s. Band knee drives: 8 per side'],
+  ['Range, 3 min','Walking lunges with a twist, side lunges, leg swings'],
+  ['Drills, 3 min','March, skip and carioca, 10 m each, slowly'],
+  ['Build-ups, 3 min','Three 40 m runs at about 60%, 70%, then 80%']
+];
+var CORE = [['Reverse crunch','12'],['Dead bug','10 per side'],['Pallof press','10 per side']];
+var LEGS = [['Split squat','8 per side'],['Reverse lunge','8 per side'],['Step-up','8 per side'],['Single-leg glute bridge','10 per side']];
+var LAT = [['Banded lateral walk','15 steps each way'],['Clamshell','15 per side'],['Monster walk','15 steps each way']];
+function week(){ return Math.max(0, Math.floor(diff(TODAY, state.startDate || TODAY) / 7)); }
+function pick(arr){ return arr[week() % arr.length]; }
+function sessA(p, c){
+  if (p === 1) return [['Short sprints','5 × 15 m at 80%, walk back'],['Strides','4 × 60–80 m at 75–80%, relaxed'],['Pogo hops','3 × 15, small and quick'],['Squat jump, land and hold','3 × 5'],['Side-to-side line hops','2 × 10, small']];
+  if (p === 2) return [['Short sprints','6 × 20 m at 85–90%, 2 min rest'],['Flying sprints','Build up over 20 m, then 20 m at 85–90%. 3–4 reps, 3 min rest'],['Side bounds, land and hold','3 × 4 per side'],['Single-leg hop forward, land and hold','3 × 5 per side, right leg last'],['Split-squat jumps','2 × 4 per side']];
+  if (p === 3) return [
+    ['Flying sprints', c.a >= 1 ? 'Build up over 20 m, then 20 m fast: 2 at 95%, then 2 at 100%. 3–4 min rest' : 'Build up over 20 m, then 20 m at 95%: 4 reps, 3–4 min rest. 100% unlocks after one green Session A'],
+    ['Short sprints', c.a >= 1 ? '4 × 20 m at 95–100%, 3 min rest' : '4 × 20 m at 95%, 3 min rest'],
+    ['Side bounds, continuous','3 × 3 per side'],
+    ['Single-leg hops, forward and sideways','Land and hold: 2 × 4 per side']];
+  return [['Reaction starts','Partner shouts “go” or drops a ball: sprint 15–20 m at max. 4–6 reps'],['Reaction cuts','Partner points left or right during a 10 m run-in: 2 × 4'],['Repeated sprints','6 × 20 m at 90–95%, 30 s rest. One set only']];
+}
+function sessB(p, c){
+  if (p === 1) return [['Stops','Run 10 m at half speed, stop within 3 steps: 2 × 4. Then at 70%: 2 × 3'],['Side shuffle into a stop','2 × 3 each way'],['Passing','30 inside-foot passes, 10–25 m'],['Driven passes','15 with the laces, 20–30 m, about 60% power. No shots yet']];
+  if (p === 2) return [['Stops','From 80–90%, within 4–5 steps: 2 × 3'],['Cuts at 45°','At 75–80%: 2 × 3 each way'],['Long passes','10 at 30–40 m, about 75% power'],['Shots','10–12 at 70–80% power, still ball, short run-up']];
+  if (p === 3){
+    var n = Math.min(10, 4 + 2 * c.b);
+    var l = [['Sprint, then stop','At 90–100%: 2 × 3'],['Sharp 90° cuts','At 85–90%: 2 × 3 each way'],['Shots at 90%','6–8'],['Full-power shots', n + ' today' + (n < 10 ? ' (2 more after each green Session B, up to 10)' : '')],['Shots off a rolled or passed ball','6']];
+    if (c.a >= 1 && c.b >= 1) l.push(['Sprint into a shot','15–20 m straight into a shot: 3–5 reps, full rest between. Start at 90%; go to 100% once that’s been green']);
+    else l.push(['Sprint into a shot','Unlocks after one green Session A and one green Session B in this phase', true]);
+    return l;
+  }
+  return [['First-time shots','8–10 off varied passes from a partner: on the ground, bouncing, from wide'],['Stop, turn, shoot','Run, stop, turn and shoot at 90–100%: 4–6'],['Tired shooting','Two 40 m shuttles, then 2 shots at 90%. Repeat 3 times']];
+}
+function strength(){
+  var lg = pick(LEGS), co = pick(CORE), la = pick(LAT);
+  return [
+    ['Copenhagen dips', justMovedUp() ? '2 × 10 per side. Cut back because you just moved up a phase' : '3 × 12–15 per side'],
+    [lg[0], '3 × ' + lg[1]],
+    [co[0], '3 × ' + co[1]],
+    [la[0], '2 × ' + la[1]],
+    ['Band knee drive','3 × 8 per side, 2 s hold at the top']
+  ];
+}
+function lightSession(){
+  var co = pick(CORE), la = pick(LAT);
+  return [['Copenhagen holds','Your usual isometric holds, both sides'],[co[0], '2 × ' + co[1]],[la[0], '2 × ' + la[1]],['Hip flexor hold','3 × 30 s per side, knee up against a band']];
+}
+function soccerItems(){
+  var p = state.phase, done = p === 4 && gate().ready, l = [];
+  if (p <= 3) l.push(['Keep it casual','Training or casual play only. No full-power shots, no all-out races for the ball']);
+  else if (!done) l.push(['Full scrimmages are fine','League games wait until Phase 4 has gone green twice']);
+  else l.push(['Full soccer, league games included','Your ceiling work is done']);
+  if (p >= 4) l.push(['Before kickoff','After the warm-up: 2 fast sprints at 90–95% and 3–4 hard shots, building to near-max on the last']);
+  l.push(['Afterwards','Log it below. Tomorrow’s check tells you how it went']);
+  return l;
+}
+var REST_NOTE = 'Rest fully: 2–4 min after sprints, 45–60 s after hard kicks. Feel a twinge in your usual spot? Stop that drill for today.';
+function planSections(t){
+  var p = state.phase, c = counts();
+  var W = {key:'w', title:'Warm-up', sub:'15 minutes. If the hip doesn’t feel smooth by the third build-up, stop and just jog today.', items:WARM};
+  var A = {key:'a', title:'Session A: sprints and jumps', sub:REST_NOTE, items:sessA(p, c)};
+  var B = {key:'b', title:'Session B: stopping and kicking', sub:REST_NOTE, items:sessB(p, c)};
+  var S = {key:'s', title:'Heavy strength', sub:'Use your usual loads.', items:strength()};
+  var R = {key:'r', title:'Easy run', items:[['Easy run','15–20 min at a conversational pace. Skip it if your legs feel heavy']]};
+  switch (t){
+    case 'A_str': return [W, A, S];
+    case 'A_run': return [W, A, R];
+    case 'B_run': return [W, B, R];
+    case 'str': return [{key:'s', title:'Heavy strength', sub:'Use your usual loads. No Session A today.', items:strength()}];
+    case 'light': return [{key:'l', title:'Light session', sub:'Keep it genuinely light. Nothing should feel hard.', items:lightSession()}];
+    case 'run': return [R];
+    case 'rest': return [{key:'x', title:'Rest', items:[['Rest','Normal daily movement is fine']]}];
+    case 'recovery': return [{key:'v', title:'Recovery', items:[['Move normally','A walk or easy daily activity'],['Squeeze holds','5 × 10 s, at a level that doesn’t hurt'],['Skip the rest','No sprints, jumps, kicks or heavy strength today']]}];
+    default: return [W, {key:'c', title:'Soccer', items:soccerItems()}];
+  }
+}
+function planReason(t){
+  var d = state.days[TODAY] || {}, m = d.morning || {};
+  if (t === 'recovery') return m.redRun ? 'Two red mornings in a row.' : 'Your check was red.';
+  if (d.planOverride) return 'You changed today’s plan.';
+  var ls = lastSoccer();
+  if (t === 'soccer_or_rest'){
+    if (!ls) return 'Not playing today? Rest instead. Log a soccer session so the app can follow your week.';
+    return 'It’s been ' + diff(TODAY, ls) + ' days since soccer. Not playing today? Rest instead.';
+  }
+  if (t === 'str') return 'The morning after soccer was red, so Session A moves to Day 5.';
+  if (t === 'A_run') return 'Session A moved here because the morning after soccer was red.';
+  return '';
+}
+
+/* ---------- views ---------- */
+function opt(v, l, cur){ return '<option value="' + v + '"' + (v === cur ? ' selected' : '') + '>' + esc(l) + '</option>'; }
+function actSelect(k, cur, withUnknown){
+  return '<select data-chg="act" data-d="' + k + '" aria-label="What you did on ' + esc(nice(k)) + '">' + opt('', 'Choose…', cur || '') +
+    ACT_ORDER.filter(function(x){ return withUnknown || x !== 'unknown'; }).map(function(x){ return opt(x, ACT[x], cur || ''); }).join('') + '</select>';
+}
+function seg(f, opts, cls){
+  return '<div class="seg ' + (cls || '') + '">' + opts.map(function(o){
+    var on = String(draft[f]) === String(o[0]);
+    return '<button type="button" data-act="draft" data-f="' + f + '" data-v="' + o[0] + '" class="' + (on ? 'on' : '') + '" aria-pressed="' + on + '">' + o[1] + '</button>';
+  }).join('') + '</div>';
+}
+function choice(act, k, cur, opts, cls){
+  return '<div class="seg ' + (cls || '') + '">' + opts.map(function(o){
+    var on = cur === o[0];
+    return '<button type="button" data-act="' + act + '" data-d="' + k + '" data-v="' + o[0] + '" class="' + (on ? 'on' : '') + '" aria-pressed="' + on + '">' + o[1] + '</button>';
+  }).join('') + '</div>';
+}
+function header(){
+  var ls = lastSoccer(), since = ls ? diff(TODAY, ls) : null, meta = '';
+  if (state.startDate){
+    meta = '<div class="meta"><span class="chip">Phase ' + state.phase + ': ' + PH[state.phase] + '</span>' +
+      (since != null ? '<span class="since">' + (since === 0 ? 'Soccer today' : since === 1 ? 'Soccer yesterday' : since + ' days since soccer') + '</span>' : '') + '</div>';
+  }
+  return '<header class="top"><h1 class="date">' + esc(nice(TODAY)) + '</h1>' + meta + '</header>';
+}
+function setupCard(){
+  var ph = [1,2,3,4].map(function(n){ return opt(String(n), 'Phase ' + n + ': ' + PH[n], '1'); }).join('');
+  return '<section class="card"><h2 class="h">Set up your program</h2>' +
+    '<p class="muted">Start only when daily life has been pain-free for 7 days and Rungs 1 and 2 of your ladder were clean, including the next morning.</p>' +
+    '<label class="field"><span>Starting phase</span><select id="su-phase">' + ph + '</select></label>' +
+    '<label class="field"><span>When did you last play soccer?</span><input type="date" id="su-soccer" max="' + TODAY + '"></label>' +
+    '<label class="field"><span>Has your physio okayed full-speed sprints and full-power shots?</span><select id="su-physio">' + opt('no','Not yet','no') + opt('yes','Yes','no') + '</select></label>' +
+    '<button class="btn" type="button" data-act="start">Start</button></section>';
+}
+function gapCard(){
+  var miss = [], k = addDays(TODAY, -6);
+  if (state.startDate && k < state.startDate) k = state.startDate;
+  while (k < TODAY){ var d = state.days[k]; if (!d || !d.activity) miss.push(k); k = addDays(k, 1); }
+  if (!miss.length) return '';
+  return '<section class="card"><h2 class="h">Fill in the last few days</h2><p class="muted small">So today’s plan knows where you are in your week.</p>' +
+    miss.map(function(m){ return '<label class="field"><span>' + esc(nice(m)) + '</span>' + actSelect(m, '', true) + '</label>'; }).join('') + '</section>';
+}
+function checkCard(){
+  if (!draft){
+    var m = (state.days[TODAY] || {}).morning;
+    draft = m ? Object.assign({}, m) : {squeeze:0, weaker:false, bridge:'same', knee:'same', daily:false, flag:false};
+  }
+  var scale = '';
+  for (var i = 0; i <= 10; i++){ var on = draft.squeeze === i; scale += '<button type="button" data-act="draft" data-f="squeeze" data-v="' + i + '" class="' + (on ? 'on' : '') + '" aria-pressed="' + on + '" aria-label="Pain ' + i + ' out of 10">' + i + '</button>'; }
+  return '<section class="card"><h2 class="h">Morning hip check</h2>' +
+    '<p class="muted small">Two minutes, before you get going. Soreness on both sides is normal. What counts is your usual right-side spot.</p>' +
+    '<div class="q"><p class="ql">Squeeze a pillow between your bent knees, hard, for 5 seconds. Any pain?</p><div class="scale">' + scale + '</div><div class="scale-ends"><span>None</span><span>Worst</span></div></div>' +
+    '<div class="q"><p class="ql">Did the squeeze feel as strong as usual?</p>' + seg('weaker', [[false,'As strong'],[true,'Weaker']]) + '</div>' +
+    '<div class="q"><p class="ql">Single-leg bridge, 10 seconds each side.</p>' + seg('bridge', [['same','Same both sides'],['worse','Right side worse']]) + '</div>' +
+    '<div class="q"><p class="ql">Standing knee drive against a band, 3 each side.</p>' + seg('knee', [['same','Same both sides'],['worse','Right side worse']]) + '</div>' +
+    '<div class="q"><p class="ql">Did you notice your hip in daily life yesterday?</p>' + seg('daily', [[false,'No'],[true,'Yes']]) + '</div>' +
+    '<div class="q"><p class="ql">Any warning signs? Pain at night, catching or locking, pain when you cough or sneeze, or a sudden sharp pull.</p>' + seg('flag', [[false,'None'],[true,'Yes']]) + '</div>' +
+    '<button class="btn" type="button" data-act="saveCheck">Save check</button>' +
+    (redo ? '<button class="link center" type="button" data-act="cancelRedo">Cancel</button>' : '') + '</section>';
+}
+function lightBand(m, d){
+  var L = {
+    green:['Green light','Train as planned.'],
+    amber:['Amber light','Do today’s plan as written, but don’t add anything. This phase repeats.'],
+    red:['Red light','No hard training today.']
+  }[m.light];
+  var extra = d.droppedFrom ? ' You’re back to Phase ' + state.phase + '.' : '';
+  var y = addDays(TODAY, -1), yd = state.days[y], verdict = '';
+  if (yd && (hasA(yd.activity) || hasB(yd.activity))){
+    var r = sessionResult(y), nm = hasA(yd.activity) ? 'Session A' : 'Session B';
+    verdict = r === 'green' ? 'Yesterday’s ' + nm + ' counts toward moving up.' :
+      r === 'twinge' ? 'Yesterday’s ' + nm + ' had a twinge, so it doesn’t count toward moving up.' :
+      'Yesterday’s ' + nm + ' doesn’t count toward moving up.';
+  }
+  return '<section class="light ' + m.light + '"><div class="light-row"><span class="dot" aria-hidden="true"></span><h2>' + L[0] + '</h2><button class="link" type="button" data-act="redo">Redo check</button></div>' +
+    '<p>' + L[1] + extra + '</p>' + (verdict ? '<p class="small">' + verdict + '</p>' : '') + '</section>';
+}
+function planView(){
+  var t = planType(), d = state.days[TODAY] || {}, done = d.done || [], reason = planReason(t);
+  var h = '<section class="plan" aria-label="Today’s plan"><h2 class="plan-title">' + TITLE[t] + '</h2>' + (reason ? '<p class="muted">' + reason + '</p>' : '');
+  planSections(t).forEach(function(s){
+    h += '<div class="sec"><h3>' + s.title + '</h3>' + (s.sub ? '<p class="muted small">' + s.sub + '</p>' : '') + '<ul class="items">';
+    s.items.forEach(function(it, i){
+      var k = s.key + i;
+      if (it[2]){ h += '<li class="locked"><span class="box" aria-hidden="true"></span><div class="lk"><b>' + it[0] + '</b><span>' + it[1] + '</span></div></li>'; return; }
+      var on = done.indexOf(k) >= 0;
+      h += '<li><button type="button" class="item' + (on ? ' on' : '') + '" data-act="done" data-v="' + k + '" aria-pressed="' + on + '"><span class="box" aria-hidden="true"></span><span class="txt"><b>' + it[0] + '</b>' + (it[1] ? '<span>' + it[1] + '</span>' : '') + '</span></button></li>';
+    });
+    h += '</ul></div>';
+  });
+  if ((d.morning || {}).light !== 'red'){
+    var ov = [['','Suggested plan'],['soccer','Soccer'],['A_str','Session A + heavy strength'],['A_run','Session A + easy run'],['B_run','Session B + easy run'],['str','Heavy strength only'],['light','Light / isometric'],['run','Easy run'],['rest','Rest']];
+    h += '<label class="field"><span class="muted small">Change today’s plan</span><select data-chg="override">' + ov.map(function(o){ return opt(o[0], o[1], d.planOverride || ''); }).join('') + '</select></label>';
+  }
+  return h + '</section>';
+}
+function logCard(){
+  var d = state.days[TODAY] || {}, a = d.activity || '', t = planType();
+  var h = '<section class="card"><h2 class="h">Log today</h2>';
+  if (!a && t !== 'soccer_or_rest') h += '<button class="btn ghost" type="button" data-act="logPlan">Log as planned: ' + esc(ACT[t]) + '</button>';
+  h += '<label class="field"><span>What did you do?</span>' + actSelect(TODAY, a, false) + '</label>';
+  if (hasA(a) || hasB(a)){
+    h += '<div class="q"><p class="ql">Any twinge in your usual spot, or did you catch yourself holding back on the right?</p>' + choice('setTw', TODAY, d.twinge === true ? 'true' : d.twinge === false ? 'false' : '', [['false','No'],['true','Yes']]) + '</div>';
+  }
+  if (state.phase === 3 && hasB(a)){
+    h += '<div class="q"><p class="ql">Did you do the sprint into a shot at 100%?</p>' + choice('setStk', TODAY, d.stacked ? 'true' : 'false', [['false','No'],['true','Yes']]) + '</div>';
+  }
+  h += '<label class="field"><span>Notes</span><textarea data-chg="notes" rows="2" placeholder="Anything worth remembering">' + esc(d.notes || '') + '</textarea></label>';
+  if (a) h += '<p class="muted small">Saved.' + (hasA(a) || hasB(a) ? ' Tomorrow’s check decides whether this session counts.' : '') + '</p>';
+  return h + '</section>';
+}
+function viewToday(){
+  var h = header();
+  if (!state.startDate) return h + setupCard();
+  h += gapCard();
+  var d = state.days[TODAY] || {}, m = d.morning;
+  if (!m || redo) return h + checkCard();
+  h += lightBand(m, d);
+  if (m.flag) h += '<section class="banner stop"><h2 class="h">Stop and call your physio</h2><p>You noted a warning sign. Skip training today and get it checked.</p></section>';
+  else if (m.redRun) h += '<section class="banner stop"><h2 class="h">Two red mornings in a row</h2><p>Pause the program and contact your physio before training again.</p></section>';
+  var g = gate();
+  if (g.ready && state.phase < 4 && m.light !== 'red') h += '<section class="banner"><h2 class="h">Phase ' + state.phase + ' gate passed</h2><p>You’re ready for Phase ' + (state.phase + 1) + ': ' + PH[state.phase + 1] + '.</p><button class="btn" type="button" data-act="moveUp">Move up to Phase ' + (state.phase + 1) + '</button></section>';
+  else if (g.ready && state.phase === 4) h += '<section class="banner"><h2 class="h">Program complete</h2><p>Back to full scrimmages, then league games. Keep a few full-speed sprints and 4–6 full-power shots in every week.</p></section>';
+  return h + planView() + logCard();
+}
+function strip(){
+  return '<ol class="strip">' + [1,2,3,4].map(function(n){
+    var c = n < state.phase ? 'done' : n === state.phase ? 'cur' : '';
+    return '<li class="' + c + '"' + (n === state.phase ? ' aria-current="step"' : '') + '><b>' + n + '</b>' + PH[n] + '</li>';
+  }).join('') + '</ol>';
+}
+function viewProgress(){
+  if (!state.startDate) return header() + '<p class="muted">Set up your program on the Today tab first.</p>';
+  var g = gate(), h = header() + strip();
+  h += '<section class="card"><h2 class="h">' + (state.phase < 4 ? 'To move on from Phase ' + state.phase : 'To finish Phase 4') + '</h2><ul class="gate">' +
+    g.items.map(function(i){ return '<li class="' + (i.ok ? 'ok' : '') + '"><span class="mark" aria-hidden="true">' + (i.ok ? '✓' : '') + '</span><span>' + i.t + (i.need ? ': <b>' + i.have + ' of ' + i.need + '</b>' : '') + '</span></li>'; }).join('') +
+    '</ul><p class="muted small">A session counts when it had no twinge and the next morning’s check was green.</p>' +
+    (g.ready && state.phase < 4 ? '<button class="btn" type="button" data-act="moveUp">Move up to Phase ' + (state.phase + 1) + '</button>' : '') + '</section>';
+  h += '<section class="card"><p class="ql">Has your physio okayed full-speed sprints and full-power shots?</p>' + choice('physio', '', state.physioOK ? 'true' : 'false', [['false','Not yet'],['true','Yes']]) + '</section>';
+  var rows = '';
+  for (var i = 0; i < 14; i++){
+    var k = addDays(TODAY, -i);
+    if (state.startDate && k < state.startDate && !state.days[k]) continue;
+    var d = state.days[k] || {}, lt = d.morning ? d.morning.light : '';
+    rows += '<li><div class="hd"><span class="dot ' + lt + '" title="' + (lt ? lt + ' morning' : 'No check') + '"></span><span class="dd">' + esc(nice(k, {weekday:'short', month:'short', day:'numeric'})) + (i === 0 ? ' (today)' : '') + '</span><span class="muted small">' + (d.phase ? 'Phase ' + d.phase : '') + '</span></div>' + actSelect(k, d.activity || '', true);
+    if (hasA(d.activity) || hasB(d.activity)){
+      rows += '<div class="tw"><p class="muted">Twinge during the session?</p>' + choice('setTw', k, d.twinge ? 'true' : 'false', [['false','No'],['true','Yes']], 'sm') + '</div>';
+      var r = sessionResult(k);
+      var lbl = {green:'Counted', pending:'Waiting for the next morning', twinge:'Twinge, not counted', amber:'Amber next morning, not counted', red:'Red next morning, not counted'}[r];
+      rows += '<span class="badge ' + r + '">' + lbl + '</span>';
+    }
+    if (d.notes) rows += '<p class="small muted">' + esc(d.notes) + '</p>';
+    rows += '</li>';
+  }
+  h += '<section class="card"><h2 class="h">Last two weeks</h2><ul class="hist">' + rows + '</ul></section>';
+  h += '<section class="card"><h2 class="h">Phase history</h2><ul class="plog">' + state.phaseLog.slice().reverse().map(function(p){ return '<li>' + esc(nice(p.date, {month:'short', day:'numeric'})) + ': Phase ' + p.to + ' (' + esc(p.why) + ')</li>'; }).join('') + '</ul>' +
+    '<label class="field"><span>Change phase manually</span><select data-chg="phase">' + [1,2,3,4].map(function(n){ return opt(String(n), 'Phase ' + n + ': ' + PH[n], String(state.phase)); }).join('') + '</select></label></section>';
+  h += '<section class="card"><p class="muted small">' + (saveMode === 'account' ? 'Your log is saved to your Claude account, so it follows you across devices.' : 'Your log is saved on this device only.') + '</p>' +
+    '<button class="btn danger" type="button" data-act="reset">' + (resetArm ? 'Tap again to erase everything' : 'Erase all data and start over') + '</button></section>';
+  return h;
+}
+function refItems(list){ return '<ul class="ref-list">' + list.map(function(i){ return '<li><b>' + i[0] + '</b><span>' + i[1] + '</span></li>'; }).join('') + '</ul>'; }
+function refSec(title, body, open, tag){ return '<details class="ref"' + (open ? ' open' : '') + '><summary><span>' + title + '</span>' + (tag ? '<span class="here">' + tag + '</span>' : '') + '</summary><div class="ref-body">' + body + '</div></details>'; }
+function viewPlan(){
+  var cur = state.startDate ? state.phase : 0, full = {a:1, b:1, stk:0};
+  var B3 = [['Sprint, then stop','At 90–100%: 2 × 3'],['Sharp 90° cuts','At 85–90%: 2 × 3 each way'],['Shots at 90%','6–8'],['Full-power shots','Start with 4, add 2 after each green Session B, up to 10'],['Shots off a rolled or passed ball','6'],['Sprint into a shot','After one green Session A and one green Session B: 15–20 m straight into a shot, 3–5 reps, full rest. 90% first, then 100%']];
+  var P = {
+    1:{goal:'Practise every movement at 75–80% effort, with good form. No shots yet.', a:sessA(1, full), b:sessB(1, full), gate:'Both sessions green twice.'},
+    2:{goal:'Raise effort to 85–90% and add cutting and your first real shots.', a:sessA(2, full), b:sessB(2, full), gate:'Both sessions green twice, and your physio has okayed full-speed sprints and full-power shots.'},
+    3:{goal:'Reach full speed and full power, first separately, then a sprint straight into a shot. That combination caused your recent flares, so it comes last.', a:sessA(3, full), b:B3, gate:'The sprint into a shot at 100% has gone green twice.'},
+    4:{goal:'Max efforts on a cue you don’t control, and when you’re tired, the way games deliver them.', a:sessA(4, full), b:sessB(4, full), gate:'Both sessions green twice. Then back to full scrimmages, then league games.'}
+  };
+  var h = '<header class="top"><h1 class="date">The plan</h1><p class="muted">Your whole program, for quick reference.' + (cur ? ' Your current phase is open.' : '') + '</p></header>';
+  h += refSec('How it works', '<ol class="ref-ol"><li>Two short sessions a week: Session A on Day 3 (sprints and jumps) and Session B on Day 5 (stopping and kicking). Always before other training.</li><li>A 2-minute hip check every morning gives you a green, amber or red light.</li><li>Move up a phase after two green sessions of each type. Amber means repeat. Red means go back one phase.</li><li>Rest fully between max efforts: 2–4 min after sprints, 45–60 s after hard kicks. Stop a drill when you slow down or start holding back.</li><li>About 8 weeks. Repeating a phase is normal.</li></ol>', !cur);
+  h += refSec('Your week', refItems([['Day 1','Soccer'],['Day 2','Rest'],['Day 3','Session A, then heavy strength'],['Day 4','Rest'],['Day 5','Session B, then an easy 15–20 min run (optional)'],['Day 6','Light / isometric session'],['Day 7','Rest']]) + '<p class="small muted">The week you move up a phase, cut Copenhagen dips to 2 × 10 per side. If the morning after soccer is red, skip Session A and do it on Day 5 instead of Session B. Until Phase 3 is done, keep Day 1 soccer casual: no full-power shots, no all-out races.</p>');
+  h += refSec('Morning check and lights', refItems([['Squeeze','Pillow between bent knees, squeeze hard for 5 s. Rate any pain 0–10'],['Bridge','Single-leg, 10 s each side. Any difference?'],['Knee drive','Against a band, 3 each side. Any difference?']]) + '<h4>What the light means</h4>' + refItems([['Green','0–1 out of 10, both sides the same. Train as planned'],['Amber','2 out of 10, usual spot worse than normal, or squeeze weaker. Repeat your phase'],['Red','3 or more out of 10, worse than yesterday, or felt in daily life. Go back one phase. Two reds in a row: see your physio']]) + '<p class="small muted">Soreness on both sides is normal. Soreness only in your usual right-side spot counts, even when it’s mild. Feel a twinge during a drill? Stop that drill for the day, and don’t test it again.</p>');
+  h += refSec('Warm-up', refItems(WARM) + '<p class="small muted">If the hip doesn’t feel smooth by the third build-up, skip the rest of the session and just jog.</p>');
+  [1,2,3,4].forEach(function(n){ var p = P[n]; h += refSec('Phase ' + n + ': ' + PH[n], '<p>' + p.goal + '</p><h4>Session A</h4>' + refItems(p.a) + '<h4>Session B</h4>' + refItems(p.b) + '<p class="small"><b>Move on when:</b> ' + p.gate + '</p>', n === cur, n === cur ? 'You’re here' : ''); });
+  h += refSec('Stop and call your physio', '<p>Pain that wakes you at night, catching or locking in the hip, groin pain when you cough or sneeze, a sudden sharp pull or tearing feeling, two red mornings in a row, or a red light lasting more than 3 days.</p>');
+  h += refSec('After week 8', '<p>Add a second soccer session after two weeks of all-green mornings. It replaces Session B; keep Session A. Start with training or small-sided play, and keep your Copenhagen work as it is.</p><p>On game day, after the warm-up, do 2 fast sprints at 90–95% and 3–4 hard shots before kickoff.</p><p>Keep a few full-speed sprints and 4–6 full-power shots in every week.</p>');
+  return h;
+}
+function render(){
+  TODAY = keyOf(new Date());
+  $('#app').innerHTML = tab === 'today' ? viewToday() : tab === 'plan' ? viewPlan() : viewProgress();
+  ['today','progress','plan'].forEach(function(t){
+    var b = $('#t-' + t);
+    b.className = tab === t ? 'on' : '';
+    b.setAttribute('aria-current', tab === t ? 'page' : 'false');
+  });
+}
+
+/* ---------- actions ---------- */
+function setAct(k, a){
+  var d = day(k);
+  if (!a) delete d.activity; else d.activity = a;
+  if (d.phase == null) d.phase = state.phase;
+  if (!hasA(a) && !hasB(a)){ delete d.twinge; delete d.stacked; }
+  save(); render();
+}
+function saveCheck(){
+  var d = day(TODAY);
+  if (d.droppedFrom){
+    state.phase = d.droppedFrom; state.phaseStart = d.prevStart; state.phaseDir = d.prevDir || 0;
+    state.phaseLog = state.phaseLog.filter(function(x){ return !(x.date === TODAY && x.why === 'Red morning check'); });
+    delete d.droppedFrom; delete d.prevStart; delete d.prevDir;
+  }
+  var y = state.days[addDays(TODAY, -1)], ym = y && y.morning;
+  var m = {squeeze:draft.squeeze, weaker:draft.weaker, bridge:draft.bridge, knee:draft.knee, daily:draft.daily, flag:draft.flag};
+  m.light = m.flag ? 'red' : lightOf(m, ym ? ym.squeeze : null);
+  m.redRun = m.light === 'red' && !!ym && ym.light === 'red';
+  if (m.light === 'red' && !m.redRun && state.phase > 1){
+    d.droppedFrom = state.phase; d.prevStart = state.phaseStart; d.prevDir = state.phaseDir;
+    state.phase -= 1; state.phaseStart = TODAY; state.phaseDir = -1;
+    state.phaseLog.push({date:TODAY, to:state.phase, why:'Red morning check'});
+  }
+  d.morning = m;
+  if (!d.activity) d.phase = state.phase;
+  draft = null; redo = false;
+  save(); render(); window.scrollTo(0, 0);
+}
+function moveUp(){
+  if (state.phase >= 4) return;
+  state.phase += 1; state.phaseStart = TODAY; state.phaseDir = 1;
+  state.phaseLog.push({date:TODAY, to:state.phase, why:'Gate passed'});
+  var d = state.days[TODAY]; if (d && !d.activity) d.phase = state.phase;
+  save(); render(); window.scrollTo(0, 0);
+}
+document.addEventListener('click', function(e){
+  var el = e.target.closest('[data-act]'); if (!el) return;
+  var a = el.dataset.act, v = el.dataset.v, k = el.dataset.d;
+  if (a !== 'reset') resetArm = false;
+  if (a === 'tab'){ tab = v; render(); window.scrollTo(0, 0); return; }
+  if (a === 'draft'){ var f = el.dataset.f; draft[f] = f === 'squeeze' ? Number(v) : v === 'true' ? true : v === 'false' ? false : v; render(); return; }
+  if (a === 'saveCheck') return saveCheck();
+  if (a === 'redo'){ redo = true; draft = null; render(); return; }
+  if (a === 'cancelRedo'){ redo = false; draft = null; render(); return; }
+  if (a === 'moveUp') return moveUp();
+  if (a === 'done'){ var d = day(TODAY), list = d.done || (d.done = []), i = list.indexOf(v); if (i >= 0) list.splice(i, 1); else list.push(v); save(); render(); return; }
+  if (a === 'setTw'){ day(k).twinge = v === 'true'; save(); render(); return; }
+  if (a === 'setStk'){ day(k).stacked = v === 'true'; save(); render(); return; }
+  if (a === 'physio'){ state.physioOK = v === 'true'; save(); render(); return; }
+  if (a === 'logPlan'){ return setAct(TODAY, planType()); }
+  if (a === 'start'){
+    var ph = Number($('#su-phase').value), ls = $('#su-soccer').value, ok = $('#su-physio').value === 'yes';
+    state = EMPTY(); state.startDate = TODAY; state.phase = ph; state.phaseStart = TODAY; state.physioOK = ok;
+    state.phaseLog = [{date:TODAY, to:ph, why:'Started'}];
+    if (ls && ls <= TODAY) state.days[ls] = {activity:'soccer', phase:ph};
+    save(); render(); return;
+  }
+  if (a === 'reset'){
+    if (!resetArm){ resetArm = true; render(); return; }
+    resetArm = false; state = EMPTY(); draft = null; redo = false; tab = 'today'; save(); render(); return;
+  }
+});
+document.addEventListener('change', function(e){
+  var el = e.target.closest('[data-chg]'); if (!el) return;
+  var c = el.dataset.chg;
+  if (c === 'act') return setAct(el.dataset.d, el.value);
+  if (c === 'override'){ var d = day(TODAY); if (el.value) d.planOverride = el.value; else delete d.planOverride; d.done = []; save(); render(); return; }
+  if (c === 'notes'){ day(TODAY).notes = el.value; save(); return; }
+  if (c === 'phase'){
+    var n = Number(el.value); if (n === state.phase) return;
+    state.phaseDir = n > state.phase ? 1 : -1; state.phase = n; state.phaseStart = TODAY;
+    state.phaseLog.push({date:TODAY, to:n, why:'Changed manually'});
+    save(); render(); return;
+  }
+});
+document.addEventListener('visibilitychange', function(){ if (!document.hidden && keyOf(new Date()) !== TODAY){ draft = null; redo = false; render(); } });
+render();
+})();
+</script>
+</body>
+</html>
