@@ -164,14 +164,16 @@ var ACT = {
 };
 var ACT_ORDER = ['soccer','A_str','B_run','A_run','A','B','str','light','run','rest','recovery','other','unknown'];
 var TITLE = {
-  soccer:'Soccer day', soccer_or_rest:'Soccer day, or rest', A_str:'Session A, then heavy strength',
+  soccer:'Soccer day', soccer_or_rest:'Soccer day, or rest', practice:'Practice tonight, or rest', A_str:'Session A, then heavy strength',
   A_run:'Session A, then an easy run', B_run:'Session B, then an easy run', str:'Heavy strength only',
   light:'Light / isometric session', run:'Easy run', rest:'Rest day', recovery:'Recovery day'
 };
 function hasA(a){ return a === 'A_str' || a === 'A_run' || a === 'A'; }
 function hasB(a){ return a === 'B_run' || a === 'B'; }
 
-function EMPTY(){ return {v:1, startDate:null, phase:1, phaseStart:null, phaseDir:0, physioOK:false, phaseLog:[], days:{}, updatedAt:0}; }
+function EMPTY(){ return {v:1, startDate:null, phase:1, phaseStart:null, phaseDir:0, physioOK:false, practiceDay:3, phaseLog:[], days:{}, updatedAt:0}; }
+var WD = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+function planAct(t){ return t === 'practice' ? 'soccer' : t === 'soccer_or_rest' ? '' : t; }
 var state = EMPTY();
 var tab = 'today', draft = null, redo = false, resetArm = false, saveMode = 'device';
 
@@ -262,6 +264,13 @@ function planType(){
   var d = state.days[TODAY] || {}, m = d.morning;
   if (m && m.light === 'red') return 'recovery';
   if (d.planOverride) return d.planOverride;
+  if (state.practiceDay != null){
+    var pc = (parse(TODAY).getDay() - state.practiceDay + 7) % 7;
+    if (pc === 0) return d.activity === 'soccer' ? 'soccer' : 'practice';
+    var pk = addDays(TODAY, -pc), pd = state.days[pk];
+    var pred = !!(pd && pd.activity === 'soccer') && soccerWasRed(pk);
+    return {1:'rest', 2:pred ? 'str' : 'A_str', 3:'rest', 4:pred ? 'A_run' : 'B_run', 5:'light', 6:'rest'}[pc];
+  }
   var ls = lastSoccer(); if (!ls) return 'soccer_or_rest';
   var cyc = diff(TODAY, ls), red = soccerWasRed(ls);
   var map = {0:'soccer', 1:'rest', 2:red ? 'str' : 'A_str', 3:'rest', 4:red ? 'A_run' : 'B_run', 5:'light', 6:'rest'};
@@ -356,6 +365,7 @@ function planReason(t){
   var d = state.days[TODAY] || {}, m = d.morning || {};
   if (t === 'recovery') return m.redRun ? 'Two red mornings in a row.' : 'Your check was red.';
   if (d.planOverride) return 'You changed today’s plan.';
+  if (t === 'practice') return WD[state.practiceDay] + ' practice. Not going? Rest today instead.';
   var ls = lastSoccer();
   if (t === 'soccer_or_rest'){
     if (!ls) return 'Not playing today? Rest instead. Log a soccer session so the app can follow your week.';
@@ -466,7 +476,7 @@ function planView(){
 function logCard(){
   var d = state.days[TODAY] || {}, a = d.activity || '', t = planType();
   var h = '<section class="card"><h2 class="h">Log today</h2>';
-  if (!a && t !== 'soccer_or_rest') h += '<button class="btn ghost" type="button" data-act="logPlan">Log as planned: ' + esc(ACT[t]) + '</button>';
+  if (!a && planAct(t)) h += '<button class="btn ghost" type="button" data-act="logPlan">' + (t === 'practice' ? 'I went to practice' : 'Log as planned: ' + esc(ACT[t])) + '</button>';
   h += '<label class="field"><span>What did you do?</span>' + actSelect(TODAY, a, false) + '</label>';
   if (hasA(a) || hasB(a)){
     h += '<div class="q"><p class="ql">Any twinge in your usual spot, or did you catch yourself holding back on the right?</p>' + choice('setTw', TODAY, d.twinge === true ? 'true' : d.twinge === false ? 'false' : '', [['false','No'],['true','Yes']]) + '</div>';
@@ -524,6 +534,7 @@ function viewProgress(){
   h += '<section class="card"><h2 class="h">Last two weeks</h2><ul class="hist">' + rows + '</ul></section>';
   h += '<section class="card"><h2 class="h">Phase history</h2><ul class="plog">' + state.phaseLog.slice().reverse().map(function(p){ return '<li>' + esc(nice(p.date, {month:'short', day:'numeric'})) + ': Phase ' + p.to + ' (' + esc(p.why) + ')</li>'; }).join('') + '</ul>' +
     '<label class="field"><span>Change phase manually</span><select data-chg="phase">' + [1,2,3,4].map(function(n){ return opt(String(n), 'Phase ' + n + ': ' + PH[n], String(state.phase)); }).join('') + '</select></label></section>';
+  h += '<section class="card"><label class="field" style="margin-top:0"><span>Practice day</span><select data-chg="pday">' + opt('', 'No fixed day', state.practiceDay == null ? '' : String(state.practiceDay)) + WD.map(function(w, i){ return opt(String(i), w, state.practiceDay == null ? '' : String(state.practiceDay)); }).join('') + '</select></label><p class="muted small">Your week is built around this day, whether or not you go.</p></section>';
   h += '<section class="card"><p class="muted small">' + (saveMode === 'account' ? 'Your log is saved to your Claude account, so it follows you across devices.' : 'Your log is saved on this device only.') + '</p>' +
     '<button class="btn danger" type="button" data-act="reset">' + (resetArm ? 'Tap again to erase everything' : 'Erase all data and start over') + '</button></section>';
   return h;
@@ -541,7 +552,7 @@ function viewPlan(){
   };
   var h = '<header class="top"><h1 class="date">The plan</h1><p class="muted">Your whole program, for quick reference.' + (cur ? ' Your current phase is open.' : '') + '</p></header>';
   h += refSec('How it works', '<ol class="ref-ol"><li>Two short sessions a week: Session A on Day 3 (sprints and jumps) and Session B on Day 5 (stopping and kicking). Always before other training.</li><li>A 2-minute hip check every morning gives you a green, amber or red light.</li><li>Move up a phase after two green sessions of each type. Amber means repeat. Red means go back one phase.</li><li>Rest fully between max efforts: 2–4 min after sprints, 45–60 s after hard kicks. Stop a drill when you slow down or start holding back.</li><li>About 8 weeks. Repeating a phase is normal.</li></ol>', !cur);
-  h += refSec('Your week', refItems([['Day 1','Soccer'],['Day 2','Rest'],['Day 3','Session A, then heavy strength'],['Day 4','Rest'],['Day 5','Session B, then an easy 15–20 min run (optional)'],['Day 6','Light / isometric session'],['Day 7','Rest']]) + '<p class="small muted">The week you move up a phase, cut Copenhagen dips to 2 × 10 per side. If the morning after soccer is red, skip Session A and do it on Day 5 instead of Session B. Until Phase 3 is done, keep Day 1 soccer casual: no full-power shots, no all-out races.</p>');
+  h += refSec('Your week', refItems(['Soccer practice (or rest if you skip it)','Rest','Session A, then heavy strength','Rest','Session B, then an easy 15–20 min run (optional)','Light / isometric session','Rest'].map(function(x, i){ return [state.practiceDay != null ? WD[(state.practiceDay + i) % 7] : 'Day ' + (i + 1), x]; })) + '<p class="small muted">The week you move up a phase, cut Copenhagen dips to 2 × 10 per side. If the morning after soccer is red, skip Session A and do it on Day 5 instead of Session B. Until Phase 3 is done, keep Day 1 soccer casual: no full-power shots, no all-out races.</p>');
   h += refSec('Morning check and lights', refItems([['Squeeze','Pillow between bent knees, squeeze hard for 5 s. Rate any pain 0–10'],['Bridge','Single-leg, 10 s each side. Any difference?'],['Knee drive','Against a band, 3 each side. Any difference?']]) + '<h4>What the light means</h4>' + refItems([['Green','0–1 out of 10, both sides the same. Train as planned'],['Amber','2 out of 10, usual spot worse than normal, or squeeze weaker. Repeat your phase'],['Red','3 or more out of 10, worse than yesterday, or felt in daily life. Go back one phase. Two reds in a row: see your physio']]) + '<p class="small muted">Soreness on both sides is normal. Soreness only in your usual right-side spot counts, even when it’s mild. Feel a twinge during a drill? Stop that drill for the day, and don’t test it again.</p>');
   h += refSec('Warm-up', refItems(WARM) + '<p class="small muted">If the hip doesn’t feel smooth by the third build-up, skip the rest of the session and just jog.</p>');
   [1,2,3,4].forEach(function(n){ var p = P[n]; h += refSec('Phase ' + n + ': ' + PH[n], '<p>' + p.goal + '</p><h4>Session A</h4>' + refItems(p.a) + '<h4>Session B</h4>' + refItems(p.b) + '<p class="small"><b>Move on when:</b> ' + p.gate + '</p>', n === cur, n === cur ? 'You’re here' : ''); });
@@ -609,7 +620,7 @@ document.addEventListener('click', function(e){
   if (a === 'setTw'){ day(k).twinge = v === 'true'; save(); render(); return; }
   if (a === 'setStk'){ day(k).stacked = v === 'true'; save(); render(); return; }
   if (a === 'physio'){ state.physioOK = v === 'true'; save(); render(); return; }
-  if (a === 'logPlan'){ return setAct(TODAY, planType()); }
+  if (a === 'logPlan'){ return setAct(TODAY, planAct(planType())); }
   if (a === 'start'){
     var ph = Number($('#su-phase').value), ls = $('#su-soccer').value, ok = $('#su-physio').value === 'yes';
     state = EMPTY(); state.startDate = TODAY; state.phase = ph; state.phaseStart = TODAY; state.physioOK = ok;
@@ -628,6 +639,7 @@ document.addEventListener('change', function(e){
   if (c === 'act') return setAct(el.dataset.d, el.value);
   if (c === 'override'){ var d = day(TODAY); if (el.value) d.planOverride = el.value; else delete d.planOverride; d.done = []; save(); render(); return; }
   if (c === 'notes'){ day(TODAY).notes = el.value; save(); return; }
+  if (c === 'pday'){ state.practiceDay = el.value === '' ? null : Number(el.value); save(); render(); return; }
   if (c === 'phase'){
     var n = Number(el.value); if (n === state.phase) return;
     state.phaseDir = n > state.phase ? 1 : -1; state.phase = n; state.phaseStart = TODAY;
